@@ -1,4 +1,4 @@
-const CACHE_NAME = "ipainter-calculator-v1";
+const CACHE_NAME = "ipainter-calculator-v2";
 
 const APP_FILES = [
   "./",
@@ -27,13 +27,34 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
+  const request = event.request;
+
+  // Always prefer the newest page for navigation requests.
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put("./index.html", copy);
+          });
+          return response;
+        })
+        .catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
+
+  // Cache-first for static files.
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(response => {
+    caches.match(request).then(cached => {
+      if (cached) return cached;
+
+      return fetch(request).then(response => {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
         return response;
-      }).catch(() => caches.match("./index.html"));
+      });
     })
   );
 });
