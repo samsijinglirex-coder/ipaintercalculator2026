@@ -1,0 +1,11 @@
+{
+  "name": "iPainter Product Calculator",
+  "short_name": "iPainter Calc",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f7f4",
+  "theme_color": "#ffd400",
+  "orientation": "portrait-primary",
+  "description": "iPainterDIY Product Quantity Calculator"
+}
